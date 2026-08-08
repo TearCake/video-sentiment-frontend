@@ -1,14 +1,17 @@
-import { auth } from "./server/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "./server/auth/config";
+
+const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
     const isAuthenticated = !!req.auth;
 
-    if (!isAuthenticated) {
+    if (!isAuthenticated && req.nextUrl.pathname !== "/login") {
         const newUrl = new URL("/login", req.nextUrl.origin);
         return Response.redirect(newUrl);
     }
 });
 
 export const config = {
-    matcher: ["/"]
-}
+    matcher: ["/((?!api|_next/static|_next/image|favicon.ico|login|signup).*)"],
+};

@@ -1,6 +1,6 @@
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { env } from "~/env";
-import { PrismaClient } from "../../generated/prisma";
+import { PrismaClient } from "@prisma/client";
 
 const createPrismaClient = () => {
   const dbPath = env.DATABASE_URL.replace(/^file:/, "");

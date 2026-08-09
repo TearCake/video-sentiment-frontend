@@ -3,9 +3,9 @@
 import { useState } from "react";
 
 function CodeExamples() {
-    const [activeTab, setActiveTab] = useState<"ts" | "curl">("ts");
+  const [activeTab, setActiveTab] = useState<"ts" | "curl">("ts");
 
-    const tsCode = `const fileType = "mp4";
+  const tsCode = `const fileType = "mp4";
   // 1. Get upload URL
   const res = await fetch("/api/upload-url", {
     method: "POST",
@@ -50,11 +50,12 @@ function CodeExamples() {
     const error = await analysisRes.json();
     throw new Error(error?.error || "Failed to analyze video");
   }
+
   const analysis = await analysisRes.json();
 
   console.log("Analysis: ", analysis);`;
 
-    const curlCode = `# 1. Get upload URL
+  const curlCode = `# 1. Get upload URL
 curl -X POST \\
   -H "Authorization: Bearer \${YOUR_API_KEY}" \\
   -H "Content-Type: application/json" \\
@@ -76,36 +77,36 @@ curl -X POST \\
   -d '{"key": "\${key}"}' \\
   /api/sentiment-inference`;
 
-    return (
-        <div className="mt-3 flex h-fit w-full flex-col rounded-xl bg-gray-100 bg-opacity-70 p-4">
-            <span className="text-sm">API Usage</span>
-            <span className="mb-4 text-sm text-gray-500">
-                Examples of how to use the API with TypeScript and cURL.
-            </span>
+  return (
+    <div className="mt-3 flex h-fit w-full flex-col rounded-xl bg-gray-100 bg-opacity-70 p-4">
+      <span className="text-sm">API Usage</span>
+      <span className="mb-4 text-sm text-gray-500">
+        Examples of how to use the API with TypeScript and cURL.
+      </span>
 
-            <div className="overflow-hidden rounded-md bg-gray-900">
-                <div className="flex border-b border-gray-700">
-                    <button
-                        onClick={() => setActiveTab("ts")}
-                        className={`px-4 py-2 text-xs ${activeTab === "ts" ? "bg-gray-800 text-white" : "text-gray-400 hover:text-gray-300"}`}
-                    >
-                        TypeScript
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("curl")}
-                        className={`px-4 py-2 text-xs ${activeTab === "curl" ? "bg-gray-800 text-white" : "text-gray-400 hover:text-gray-300"}`}
-                    >
-                        cURL
-                    </button>
-                </div>
-                <div className="p-4">
-                    <pre className="max-h-[300px] overflow-y-auto text-xs text-gray-300">
-                        <code>{activeTab === "ts" ? tsCode : curlCode}</code>
-                    </pre>
-                </div>
-            </div>
+      <div className="overflow-hidden rounded-md bg-gray-900">
+        <div className="flex border-b border-gray-700">
+          <button
+            onClick={() => setActiveTab("ts")}
+            className={`px-4 py-2 text-xs ${activeTab === "ts" ? "bg-gray-800 text-white" : "text-gray-400 hover:text-gray-300"}`}
+          >
+            TypeScript
+          </button>
+          <button
+            onClick={() => setActiveTab("curl")}
+            className={`px-4 py-2 text-xs ${activeTab === "curl" ? "bg-gray-800 text-white" : "text-gray-400 hover:text-gray-300"}`}
+          >
+            cURL
+          </button>
         </div>
-    );
+        <div className="p-4">
+          <pre className="max-h-[300px] overflow-y-auto text-xs text-gray-300">
+            <code>{activeTab === "ts" ? tsCode : curlCode}</code>
+          </pre>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default CodeExamples;

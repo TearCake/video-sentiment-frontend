@@ -41,7 +41,7 @@ export async function POST(req:Request) {
         const key = `inference/${id}/${fileType}`;
 
         const command = new PutObjectCommand({
-            Bucket: process.env.AWS_INFERENCE_BUCKET,
+            Bucket: process.env.AWS_INFERENCE_BUCKET_NAME,
             Key: key,
             ContentType: `video/${fileType.replace(".","")}`,
         });

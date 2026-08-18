@@ -46,7 +46,8 @@ export async function POST(req:Request) {
             return NextResponse.json({error: "File already analyzed"}, {status: 400});
         }
 
-        const hasQuota = await checkAndUpdateQuota(quota.userId, true);
+        // Check quota without deducting — only deduct after successful inference
+        const hasQuota = await checkAndUpdateQuota(quota.userId, false);
 
         if (!hasQuota) {
             return NextResponse.json(
@@ -67,12 +68,15 @@ export async function POST(req:Request) {
             EndpointName: process.env.SAGEMAKER_ENDPOINT_NAME,
             ContentType: "application/json",
             Body: JSON.stringify({
-                video_path: `s3://${process.env.AWS_INFERENCE_BUCKET_NAME}/${key}/`
+                video_path: `s3://${process.env.AWS_INFERENCE_BUCKET_NAME}/${key}`
             }),
         });
 
         const response = await sagemakerClient.send(command);
         const analysis = JSON.parse(new TextDecoder().decode(response.Body));
+
+        // Deduct quota only after successful inference
+        await checkAndUpdateQuota(quota.userId, true);
 
         await db.videoFile.update({
             where: {key},
@@ -83,8 +87,20 @@ export async function POST(req:Request) {
 
         return NextResponse.json({analysis})
         
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("Analysis error: ", error);
-        return NextResponse.json({error: "Failed to analyze video"}, {status: 500})
+        const isTimeout =
+            typeof error === "object" &&
+            error !== null &&
+            "ErrorCode" in error &&
+            (error as { ErrorCode: string }).ErrorCode === "INTERNAL_FAILURE_FROM_MODEL";
+        return NextResponse.json(
+            {
+                error: isTimeout
+                    ? "Analysis timed out. The model is warming up — please try again in a moment."
+                    : "Failed to analyze video",
+            },
+            { status: 500 }
+        );
     }
 }

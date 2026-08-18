@@ -46,14 +46,19 @@ export default function Inference({ quota }: InferenceProps) {
         const sentimentScores: Record<string, number[]> = {};
 
         analysis.analysis.utterances.forEach((utterance) => {
-            utterance.emotions.forEach((emotion) => {
+            const emotions = utterance.emotions || (utterance as unknown as { emotion?: Array<{ label: string; confidence?: number; probability?: number }> }).emotion || [];
+            const sentiments = utterance.sentiments || (utterance as unknown as { sentiment?: Array<{ label: string; confidence?: number; probability?: number }> }).sentiment || [];
+
+            emotions.forEach((emotion) => {
+                const score = emotion.confidence ?? emotion.probability ?? 0;
                 if (!emotionScores[emotion.label]) emotionScores[emotion.label] = [];
-                emotionScores[emotion.label]!.push(emotion.confidence);
+                emotionScores[emotion.label]!.push(score);
             });
-            utterance.sentiments.forEach((sentiment) => {
+            sentiments.forEach((sentiment) => {
+                const score = sentiment.confidence ?? sentiment.probability ?? 0;
                 if (!sentimentScores[sentiment.label])
                     sentimentScores[sentiment.label] = [];
-                sentimentScores[sentiment.label]!.push(sentiment.confidence);
+                sentimentScores[sentiment.label]!.push(score);
             });
         });
 
@@ -122,11 +127,13 @@ export default function Inference({ quota }: InferenceProps) {
             {analysis ? (
                 <div className="flex flex-col gap-2">
                     {analysis?.analysis.utterances.map((utterance, i) => {
+                        const emotions = utterance.emotions || (utterance as unknown as { emotion?: Array<{ label: string; confidence?: number; probability?: number }> }).emotion || [];
+                        const sentiments = utterance.sentiments || (utterance as unknown as { sentiment?: Array<{ label: string; confidence?: number; probability?: number }> }).sentiment || [];
                         return (
                             <div
                                 key={
                                     utterance.start_time.toString() +
-                                    utterance.end_time.toString()
+                                    utterance.end_time.toString() + i
                                 }
                                 className="flex h-fit w-full flex-wrap justify-between gap-8 rounded-xl border border-gray-200 px-6 py-4 sm:gap-4"
                             >
@@ -144,7 +151,8 @@ export default function Inference({ quota }: InferenceProps) {
                                 {/* Emotions */}
                                 <div className="flex w-full max-w-48 flex-col gap-2">
                                     <span className="text-sm font-medium">Emotions</span>
-                                    {utterance.emotions.map((emo, i) => {
+                                    {emotions.map((emo) => {
+                                        const score = emo.confidence ?? emo.probability ?? 0;
                                         return (
                                             <div key={emo.label} className="flex items-center gap-2">
                                                 <span className="w-16 whitespace-nowrap text-xs text-gray-500">
@@ -153,12 +161,12 @@ export default function Inference({ quota }: InferenceProps) {
                                                 <div className="flex-1">
                                                     <div className="h-1 w-full rounded-full bg-gray-100">
                                                         <div
-                                                            style={{ width: `${emo.confidence * 100}%` }}
+                                                            style={{ width: `${score * 100}%` }}
                                                             className="h-1 rounded-full bg-gray-800"
                                                         ></div>
                                                     </div>
                                                     <span className="w-8 text-right text-xs">
-                                                        {(emo.confidence * 100).toFixed(0)}%
+                                                        {(score * 100).toFixed(0)}%
                                                     </span>
                                                 </div>
                                             </div>
@@ -169,7 +177,8 @@ export default function Inference({ quota }: InferenceProps) {
                                 {/* Sentiments */}
                                 <div className="flex w-full max-w-48 flex-col gap-2">
                                     <span className="text-sm font-medium">Sentiments</span>
-                                    {utterance.sentiments.map((sentiment, i) => {
+                                    {sentiments.map((sentiment) => {
+                                        const score = sentiment.confidence ?? sentiment.probability ?? 0;
                                         return (
                                             <div
                                                 key={sentiment.label}
@@ -182,13 +191,13 @@ export default function Inference({ quota }: InferenceProps) {
                                                     <div className="h-1 w-full rounded-full bg-gray-100">
                                                         <div
                                                             style={{
-                                                                width: `${sentiment.confidence * 100}%`,
+                                                                width: `${score * 100}%`,
                                                             }}
                                                             className="h-1 rounded-full bg-gray-800"
                                                         ></div>
                                                     </div>
                                                     <span className="w-8 text-right text-xs">
-                                                        {(sentiment.confidence * 100).toFixed(0)}%
+                                                        {(score * 100).toFixed(0)}%
                                                     </span>
                                                 </div>
                                             </div>

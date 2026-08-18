@@ -27,7 +27,7 @@ export default function UploadVideo({ apiKey, onAnalysis }: UploadVideoProps) {
                     Authorization: "Bearer " + apiKey,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ fileType: fileType }),
+                body: JSON.stringify({ fileType: fileType, contentType: file.type }),
             });
 
             if (!res.ok) {
@@ -35,12 +35,12 @@ export default function UploadVideo({ apiKey, onAnalysis }: UploadVideoProps) {
                 throw new Error(error?.error || "Failed to get upload URL");
             }
 
-            const { url, fileId, key } = await res.json();
+            const { url, fileId, key, contentType } = await res.json();
 
             // 2. Upload file to S3
             const uploadRes = await fetch(url, {
                 method: "PUT",
-                headers: { "Content-Type": file.type },
+                headers: { "Content-Type": contentType || file.type || "application/octet-stream" },
                 body: file,
             });
 

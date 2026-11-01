@@ -60,7 +60,7 @@ export default async function HomePage() {
                 className="h-1 rounded-full bg-gray-800"></div>
             </div>
           </div>
-          <CodeExamples />
+          <CodeExamples apiKey={quota.secretKey} />
         </div>
       </main>
     </div>

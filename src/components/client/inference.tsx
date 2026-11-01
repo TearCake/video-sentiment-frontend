@@ -30,8 +30,10 @@ export type Analysis = {
             start_time: number;
             end_time: number;
             text: string;
-            emotions: Array<{ label: string; confidence: number }>;
-            sentiments: Array<{ label: string; confidence: number }>;
+            emotions: Array<{ label: string; confidence?: number; probability?: number }>;
+            sentiments: Array<{ label: string; confidence?: number; probability?: number }>;
+            emotion?: Array<{ label: string; confidence?: number; probability?: number }>;
+            sentiment?: Array<{ label: string; confidence?: number; probability?: number }>;
         }>;
     }
 }

@@ -10,7 +10,7 @@ interface UploadVideoProps {
 }
 
 export default function UploadVideo({ apiKey, onAnalysis }: UploadVideoProps) {
-    const [status, setStatus] = useState<"idle" | "uploading" | "analyzing">("idle")
+    const [status, setStatus] = useState<"idle" | "uploading" | "analyzing">("idle");
     const [error, setError] = useState<string | null>(null);
 
     const handleUpload = async (file: File) => {
@@ -69,11 +69,11 @@ export default function UploadVideo({ apiKey, onAnalysis }: UploadVideoProps) {
 
             console.log("Analysis: ", analysis);
             onAnalysis(analysis);
-            setStatus("idle");
         } catch (error) {
             setError(error instanceof Error ? error.message : "Upload failed");
             console.error("Upload failed", error);
-            throw error;
+        } finally {
+            setStatus("idle");
         }
     };
 
@@ -86,7 +86,10 @@ export default function UploadVideo({ apiKey, onAnalysis }: UploadVideoProps) {
                     className="hidden"
                     onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) handleUpload(file);
+                        if (file) {
+                            handleUpload(file);
+                            e.target.value = "";
+                        }
                     }}
                     id="video-upload"
                 />
@@ -104,5 +107,5 @@ export default function UploadVideo({ apiKey, onAnalysis }: UploadVideoProps) {
             </div>
             {error && <p className="text-sm text-red-500 text-center">{error}</p>}
         </div>
-    )
+    );
 }

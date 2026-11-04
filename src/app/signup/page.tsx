@@ -11,7 +11,7 @@ import { signupSchema, type SignupSchema } from "~/schemas/auth";
 
 export default function SignupPage() {
     const router = useRouter();
-    const [error, setError] = useState<string>("test error");
+    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const form = useForm<SignupSchema>({
         resolver: zodResolver(signupSchema),

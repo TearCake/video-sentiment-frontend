@@ -10,7 +10,7 @@ import { loginSchema, type LoginSchema } from "~/schemas/auth";
 
 export default function LoginPage() {
     const router = useRouter();
-    const [error, setError] = useState<string>("test error");
+    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const form = useForm<LoginSchema>({
         resolver: zodResolver(loginSchema),
